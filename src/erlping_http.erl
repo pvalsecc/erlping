@@ -89,9 +89,15 @@ init([Url, Period, Validations]) ->
     {next_state, NextStateName :: atom(), NextState :: #state{},
         timeout() | hibernate} |
     {stop, Reason :: term(), NewState :: #state{}}).
-send_request(_Event, State) ->
+send_request(_Event, #state{url=Url}=State) ->
     lager:info("Sending request"),
-    {ok, _RequestId} = httpc:request(get, {State#state.url, []}, [], [{sync, false}]),
+    {ok, {Scheme, _UserInfo, Host, _Port, _Path, _Query}} = http_uri:parse(Url),
+%%    IpAddresses = lists:append(inet_res:lookup(Host, in, aaaa), inet_res:lookup(Host, in, a)),
+    IpAddresses = inet_res:lookup(Host, in, a),
+    RequestIds = case Scheme of
+        https -> send_https_request(Url, IpAddresses, []);
+        http -> send_http_request(Url, IpAddresses, [])
+    end,
     {next_state, wait_response, State#state{start_time=erlang:timestamp()}}.
 
 %%--------------------------------------------------------------------
@@ -236,3 +242,19 @@ apply_validations(Response, [Validation | Rest]) ->
     apply_validations(Response, Rest);
 apply_validations(_Response, []) ->
     ok.
+
+
+send_https_request(Url, [IpAddress | Rest], Accum) ->
+    lager:debug("Sending query to ~p", [IpAddress]),
+    httpc:set_options([{socket_opts, [
+        {cb_info, {erlping_tcp, tcp, tcp_closed, tcp_error}},
+        {force_ip_address, IpAddress}
+    ]}]),
+    {ok, RequestId} = httpc:request(get, {Url, []}, [], []),
+    send_https_request(Url, Rest, [RequestId | Accum]);
+send_https_request(_Url, [], Accum) ->
+    Accum.
+
+send_http_request(_Url, _IpAddresses, Accum) ->
+    %% TODO
+    Accum.

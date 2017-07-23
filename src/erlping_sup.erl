@@ -31,7 +31,7 @@ init([]) ->
     {ok, { {one_for_all, 0, 1}, [
         #{
             id => http_ping,
-            start => {erlping_http, start_link, ["https://www.thus.ch", 10*1000, [{status, 300}]]},
+            start => {erlping_http, start_link, ["https://www.thus.ch", 10*1000, [{status, 200}]]},
             restart => permanent,
             shutdown => 1000,
             type => worker

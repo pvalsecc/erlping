@@ -15,6 +15,7 @@
 %%====================================================================
 
 start(_StartType, _StartArgs) ->
+    httpc:set_options([{socket_opts, [{cb_info, {erlping_tcp, tcp, tcp_closed, tcp_error}}]}]),
     erlping_sup:start_link().
 
 %%--------------------------------------------------------------------
