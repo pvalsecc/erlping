@@ -14,7 +14,7 @@
 connect(Address, Port, Opts, Timeout) ->
     {FinalAddress, FinalOpts} = case lists:keytake(force_ip_address, 1, Opts) of
         {value, {force_ip_address, Address2}, Opts2} ->
-            lager:debug("IP addess forced to ~p", [Address2]),
+            lager:debug("IP address forced to ~p", [Address2]),
             {Address2, Opts2};
         false ->
             lager:warning("No IP address specified"),
@@ -23,7 +23,6 @@ connect(Address, Port, Opts, Timeout) ->
     gen_tcp:connect(FinalAddress, Port, FinalOpts, Timeout).
 
 send(Socket, Packet) ->
-    lager:debug("Sending packet: ~p", [Packet]),
     gen_tcp:send(Socket, Packet).
 
 setopts(A, B) ->

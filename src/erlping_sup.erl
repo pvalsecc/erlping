@@ -30,8 +30,15 @@ start_link() ->
 init([]) ->
     {ok, { {one_for_all, 0, 1}, [
         #{
+            id => https_ping,
+            start => {erlping_http, start_link, ["https://map.schweizmobil.ch/", 10*1000, [{status, 200}]]},
+            restart => permanent,
+            shutdown => 1000,
+            type => worker
+        },
+        #{
             id => http_ping,
-            start => {erlping_http, start_link, ["https://www.thus.ch", 10*1000, [{status, 200}]]},
+            start => {erlping_http, start_link, ["http://thus.ch/", 10*1000, [{status, 200}]]},
             restart => permanent,
             shutdown => 1000,
             type => worker

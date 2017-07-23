@@ -6,17 +6,18 @@
 %%% @end
 %%% Created : 25. Jun 2017 15:43
 %%%-------------------------------------------------------------------
--module(erlping_http).
+-module(erlping_https).
 -author("patrick").
 
 -behaviour(gen_fsm).
 
 %% API
--export([start_link/3]).
+-export([start_link/2]).
 
 %% gen_fsm callbacks
 -export([init/1,
-    ping/2,
+    connect/2,
+%%    send_request/3,
     handle_event/3,
     handle_sync_event/4,
     handle_info/3,
@@ -25,15 +26,11 @@
 
 -define(SERVER, ?MODULE).
 
--type validation() :: {status, number()}.
--type validations() :: [validation()].
-
 -record(state, {
+    ping :: pid(),
     url :: list(),
-    period :: number(),
-    validations :: validations(),
-    start_time :: erlang:timestamp(),
-    workers = [] :: list()
+    ip_address :: list(),
+    response = [] :: list()
 }).
 
 %%%===================================================================
@@ -48,9 +45,9 @@
 %%
 %% @end
 %%--------------------------------------------------------------------
--spec(start_link(Url :: list(), Period :: number(), Validations :: validations()) -> {ok, pid()} | ignore | {error, Reason :: term()}).
-start_link(Url, Period, Validations) ->
-    gen_fsm:start_link(?MODULE, [Url, Period, Validations], []).
+-spec(start_link(Url :: list(), IpAddress :: list()) -> {ok, pid()} | ignore | {error, Reason :: term()}).
+start_link(Url, IpAddress) ->
+    gen_fsm:start_link(?MODULE, [Url, IpAddress, self()], []).
 
 %%%===================================================================
 %%% gen_fsm callbacks
@@ -69,9 +66,9 @@ start_link(Url, Period, Validations) ->
     {ok, StateName :: atom(), StateData :: #state{}} |
     {ok, StateName :: atom(), StateData :: #state{}, timeout() | hibernate} |
     {stop, Reason :: term()} | ignore).
-init([Url, Period, Validations]) ->
-    lager:md([{desc, Url}]),
-    {ok, ping, #state{url=Url, period=Period, validations=Validations}, 0}.
+init([Url, IpAddress, Ping]) ->
+    lager:md([{desc, io_lib:format("~s ~s", [Url, inet_parse:ntoa(IpAddress)])}]),
+    {ok, connect, #state{url=Url, ip_address=IpAddress, ping=Ping}, 0}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -84,19 +81,15 @@ init([Url, Period, Validations]) ->
 %%
 %% @end
 %%--------------------------------------------------------------------
--spec(ping(Event :: term(), State :: #state{}) ->
+-spec(connect(Event :: term(), State :: #state{}) ->
     {next_state, NextStateName :: atom(), NextState :: #state{}} |
     {next_state, NextStateName :: atom(), NextState :: #state{},
         timeout() | hibernate} |
     {stop, Reason :: term(), NewState :: #state{}}).
-ping(_Event, #state{url=Url}=State) ->
-    lager:info("Sending request"),
-    {ok, {Scheme, _UserInfo, Host, _Port, _Path, _Query}} = http_uri:parse(Url),
-%%    IpAddresses = lists:append(inet_res:lookup(Host, in, aaaa), inet_res:lookup(Host, in, a)),
-    IpAddresses = inet_res:lookup(Host, in, a),
-    Workers = start_workers(Scheme, IpAddresses, State, []),
-    {next_state, wait_responses, State#state{start_time=erlang:timestamp(), workers=Workers}}.
-
+connect(_Event, #state{url=Url, ip_address=IpAddress}=State) ->
+    lager:debug("Sending request"),
+    connect_https(Url, IpAddress),
+    {next_state, wait_response, State}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -180,21 +173,18 @@ handle_sync_event(_Event, _From, StateName, State) ->
     {next_state, NextStateName :: atom(), NewStateData :: term(),
         timeout() | hibernate} |
     {stop, Reason :: normal | term(), NewStateData :: term()}).
-handle_info({http, {Worker, Response}}, wait_responses, #state{workers = Workers, period = Period}=State) ->
-    {value, {IpAddress, Worker}, RemainingWorkers} = lists:keytake(Worker, 2, Workers),
-    handle_response(Response, inet_parse:ntoa(IpAddress), State),
-    case RemainingWorkers of
-        [] ->
-            lager:info("Done"),
-            {next_state, ping, State#state{workers = RemainingWorkers}, Period};
-        _ ->
-            {next_state, wait_responses, State#state{workers = RemainingWorkers}}
-    end;
+handle_info({ssl, SslSocket, Data}, wait_response, #state{response = PrevResponse}=State) ->
+    {next_state, wait_response, State#state{response = lists:append(PrevResponse, Data)}};
+handle_info({ssl_closed, _SslSocket}, wait_response, #state{response = Response, ping = Ping}=State) ->
+    lager:debug("Got the whole response"),
+    {ok, {Version, StatusCode, ReasonPharse, Headers, Body}} =
+        httpc_response:parse([list_to_binary(Response), nolimit, false]),
+    ResponseHttp = {{Version, StatusCode, ReasonPharse}, http_response:header_list(Headers), Body},
+    Ping ! {http, {self(), ResponseHttp}},
+    {stop, normal, State};
 handle_info(Info, StateName, State) ->
-    lager:warning("Received a unknown event ~p in state ~p", [Info, StateName]),
+    lager:warning("Received a unknown event ~p", [Info]),
     {next_state, StateName, State}.
-
-
 
 %%--------------------------------------------------------------------
 %% @private
@@ -228,47 +218,12 @@ code_change(_OldVsn, StateName, State, _Extra) ->
 %%% Internal functions
 %%%===================================================================
 
-start_workers(https, [IpAddress | Rest], #state{url = Url} = State, Accum) ->
-    {ok, Worker} = erlping_https:start_link(Url, IpAddress),
-    start_workers(https, Rest, State, [{IpAddress, Worker} | Accum]);
-start_workers(http, [IpAddress | Rest], #state{url = Url} = State, Accum) ->
-    {ok, {Scheme, UserInfo, Host, Port, Path, Query}} = http_uri:parse(Url),
-    FixedUrl = gen_uri(Scheme, UserInfo, IpAddress, Port, Path, Query),
-    {ok, _} = http_uri:parse(FixedUrl),
-    lager:debug("Sending request to ~p", [FixedUrl]),
-    {ok, Worker} = httpc:request(get, {FixedUrl, [{"connection", "close"}, {"host", Host}]}, [], [{sync, false}]),
-    start_workers(http, Rest, State, [{IpAddress, Worker} | Accum]);
-start_workers(_Scheme, [], _State, Accum) ->
-    Accum.
-
-handle_response(Response={{"HTTP/1.1", Status, _StatusText}, _Headers, _Body}, IpAddress,
-    #state{validations=Validations}) ->
-    apply_validations(Response, IpAddress, Validations);
-handle_response(Response, IpAddress, _State) ->
-    lager:warning("Unexpected response: ~p", [Response]),
-    false.
-
-
-apply_validation({{"HTTP/1.1", Status, _Text}, _Headers, _Body}, IpAddress, {status, Status}) ->
-    lager:debug("Good status for ~s", [IpAddress]),
-    true;
-apply_validation(Response, IpAddress, Validation) ->
-    lager:warning("Validation ~p failed for ~s: ~p", [Validation, IpAddress, Response]),
-    false.
-
-apply_validations(Response, IpAddress, [Validation | Rest]) ->
-    case apply_validation(Response, IpAddress, Validation) of
-        true -> apply_validations(Response, IpAddress, Rest);
-        false -> false
-    end;
-apply_validations(_Response, _IpAddress, []) ->
-    ok.
-
-
-gen_uri(Scheme, UserInfo, IpAddress, Port, Path, Query) ->
-    lists:flatten(io_lib:format("~w://~s:~p/~s~s", [Scheme, inet_parse:ntoa(IpAddress), Port, maybe_path(Path), Query])).
-
-maybe_path("/") ->
-    "";
-maybe_path(Path) ->
-    Path.
+connect_https(Url, IpAddress) ->
+    lager:debug("Connecting"),
+    {ok, {_Scheme, _UserInfo, Host, Port, Path, Query}} = http_uri:parse(Url),
+    {ok, Socket} = ssl:connect(Host, Port,  [
+        {cb_info, {erlping_tcp, tcp, tcp_closed, tcp_error}},
+        {force_ip_address, IpAddress}
+    ], 5000),
+    Request = list_to_binary(io_lib:format("GET ~s~s HTTP/1.1\r\nHost: ~s\r\nConnection: close\r\n\r\n", [Path, Query, Host])),
+    ssl:send(Socket, Request).
