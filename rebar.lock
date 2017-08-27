@@ -10,7 +10,7 @@
   0},
  {<<"odi">>,
   {git,"https://github.com/pvalsecc/odi.git",
-       {ref,"6c9eb77192e364860295befde6b06094609682d4"}},
+       {ref,"65c1807ba25c180a609b35f292723cbacc9b8fc1"}},
   0},
  {<<"small_ints">>,
   {git,"https://github.com/whatyouhide/small_ints.git",

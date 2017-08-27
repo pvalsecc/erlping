@@ -30,6 +30,13 @@ start_link() ->
 init([]) ->
     {ok, { {one_for_one, 0, 1}, [
         #{
+            id => db,
+            start => {erlping_db, start_link, []},
+            restart => permanent,
+            shutdown => 5000,
+            type => worker
+        },
+        #{
             id => pings_sup,
             start => {erlping_pings_sup, start_link, []},
             restart => permanent,
