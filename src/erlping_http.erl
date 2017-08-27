@@ -50,8 +50,7 @@
 %%--------------------------------------------------------------------
 -spec(start_link(Ping::#{}, Config::#{}) -> {ok, pid()} | ignore | {error, Reason :: term()}).
 start_link(Ping, Config) ->
-    #{"url" := Url, "period" := Period} = Ping,
-    Validations = [{status, 200}],  % TODO
+    #{"url" := Url, "period" := Period, "validates" := Validations} = Ping,
     gen_fsm:start_link(?MODULE, [erlping_template:do(Url, Config), Period * 1000, Validations], []).
 
 %%%===================================================================
@@ -251,7 +250,8 @@ handle_response(Response, _IpAddress, _State) ->
     false.
 
 
-apply_validation({{"HTTP/1.1", Status, _Text}, _Headers, _Body}, IpAddress, {status, Status}) ->
+apply_validation({{"HTTP/1.1", Status, _Text}, _Headers, _Body}, IpAddress,
+                 {"HttpStatusValidation", #{"expected_status" := Status}}) ->
     lager:debug("Good status for ~s", [IpAddress]),
     true;
 apply_validation(Response, IpAddress, Validation) ->

@@ -204,6 +204,8 @@ group_merge(T, Parent, Child) ->
         fun("out_Notifies", V, Acc) ->
             ParentNotifs = maps:get("notifies", Acc, []),
             Acc#{"notifies" => ParentNotifs ++ get_linkeds(T, follow_edges(T, V, "in"), [])};
+        ("out_Validates", V, Acc) ->
+            Acc#{"validates" => get_linkeds(T, follow_edges(T, V, "in"), [])};
         ("out_" ++ _, _V, Acc) ->
             Acc;
         ("in_" ++ _, _V, Acc) ->
@@ -218,4 +220,4 @@ get_linkeds(_T, [], Acc) ->
     lists:reverse(Acc);
 get_linkeds(T, [Rid | Others], Acc) ->
     {LinkedRid, document, _LinkedVersion, LinkedClass, Linked} = odi_graph:record_load(T, Rid, default),
-    get_linkeds(T, Others, [{LinkedRid, LinkedClass, group_merge(T, #{}, Linked)} | Acc]).
+    get_linkeds(T, Others, [{LinkedClass, group_merge(T, #{}, Linked)} | Acc]).
