@@ -28,16 +28,27 @@ start_link() ->
 
 %% Child :: {Id,StartFunc,Restart,Shutdown,Type,Modules}
 init([]) ->
-    {ok, { {one_for_one, 0, 1}, [
+    Configs = erlping_db:load_config(erlping_db),
+    io:format("Configs=~p~n", [Configs]),
+    {ok, { {one_for_one, 0, 1}, create_childs(Configs, [])} }.
+
+create_childs([], Acc) ->
+    lists:reverse(Acc);
+create_childs([{Rid, Class, Ping, Config} | Rest], Acc) ->
+    Module = ping_module(Class),
+    create_childs(Rest, [
         #{
-            id => http_ping,
-            start => {erlping_http, start_link, ["https://www.suissealpine.sac-cas.ch/api/c2c/health_check?max_level=100", 10*1000, [{status, 200}]]},
+            id => {Rid, Config},
+            start => {Module, start_link, [Ping, Config]},
             restart => permanent,
             shutdown => 1000,
             type => worker
-        }
-    ]} }.
+        } | Acc
+    ]).
 
 %%====================================================================
 %% Internal functions
 %%====================================================================
+
+ping_module("Http") ->
+    erlping_http.

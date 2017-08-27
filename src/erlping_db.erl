@@ -12,7 +12,7 @@
 -behaviour(gen_server).
 
 %% API
--export([start_link/0]).
+-export([start_link/0, load_config/1]).
 
 %% gen_server callbacks
 -export([init/1,
@@ -43,6 +43,10 @@
 start_link() ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 
+load_config(Pid) ->
+    gen_server:call(Pid, {load_config}).
+
+
 %%%===================================================================
 %%% gen_server callbacks
 %%%===================================================================
@@ -66,7 +70,7 @@ init([]) ->
         application:get_env(erlping, db),
     {_Clusters, Con} = odi:db_open(Host, DBName, User, Password, []),
     State = #state{con = Con},
-    {ok, load_config(State)}.
+    {ok, State}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -83,6 +87,8 @@ init([]) ->
     {noreply, NewState :: #state{}, timeout() | hibernate} |
     {stop, Reason :: term(), Reply :: term(), NewState :: #state{}} |
     {stop, Reason :: term(), NewState :: #state{}}).
+handle_call({load_config}, _From, State) ->
+    {reply, load_config_impl(State), State};
 handle_call(_Request, _From, State) ->
     {reply, ok, State}.
 
@@ -152,23 +158,20 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 
 
-load_config(#state{con=Con}=State) ->
+load_config_impl(#state{con=Con}) ->
     {ok, T} = odi_graph:begin_transaction(Con),
     Pings = odi_graph:query(T, "SELECT FROM Ping", -1,
         "[*]out_Results:-2 in_Tests:0 in_Contains:0 out_Notifies:0 [*]out:0"),
-    io:format("Pings: ~p~n", [Pings]),
-    Configs = pings_configs(T, Pings, []),
-    io:format("Configs: ~p~n", [Configs]),
-    State.
+    pings_configs(T, Pings, []).
 
-pings_configs(T, [], List) ->
+pings_configs(_T, [], List) ->
     List;
 pings_configs(T, [{Rid, document, _Version, Class, Ping} | Others], List) ->
     Configs = ping_configs(T, Rid, Class, Ping),
     pings_configs(T, Others, Configs ++ List).
 
 ping_configs(T, Rid, Class, #{"in_Tests" := GroupEdges} = Ping) ->
-    lists:map(fun(Config) -> {Rid, Class, Ping, Config} end,
+    lists:map(fun(Config) -> {Rid, Class, group_merge(T, #{}, Ping), Config} end,
         groups_configs(T, follow_edges(T, GroupEdges, "out"), [])).
 
 groups_configs(_T, [], Configs) ->
@@ -197,19 +200,19 @@ follow_edges(T, Edges, Direction) ->
     end, Edges).
 
 group_merge(T, Parent, Child) ->
-    maps:fold(fun(K, V, Acc) ->
-        case K of
-            "out_Notifies" ->
-                ParentNotifs = maps:get("notifies", Acc, []),
-                Acc#{"notifies" => ParentNotifs ++ get_linkeds(T, follow_edges(T, V, "in"), [])};
-            "out_" ++ _ ->
-                Acc;
-            "in_" ++ _ ->
-                Acc;
-            _ ->
-                Acc#{K => V}
-        end
-    end, Parent, Child).
+    maps:fold(
+        fun("out_Notifies", V, Acc) ->
+            ParentNotifs = maps:get("notifies", Acc, []),
+            Acc#{"notifies" => ParentNotifs ++ get_linkeds(T, follow_edges(T, V, "in"), [])};
+        ("out_" ++ _, _V, Acc) ->
+            Acc;
+        ("in_" ++ _, _V, Acc) ->
+            Acc;
+        ("name", _V, Acc) ->
+            Acc;
+        (K, V, Acc) ->
+            Acc#{K => V}
+        end, Parent, Child).
 
 get_linkeds(_T, [], Acc) ->
     lists:reverse(Acc);

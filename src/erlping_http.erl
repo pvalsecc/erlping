@@ -12,7 +12,7 @@
 -behaviour(gen_fsm).
 
 %% API
--export([start_link/3]).
+-export([start_link/2]).
 
 %% gen_fsm callbacks
 -export([init/1,
@@ -48,9 +48,11 @@
 %%
 %% @end
 %%--------------------------------------------------------------------
--spec(start_link(Url :: list(), Period :: number(), Validations :: validations()) -> {ok, pid()} | ignore | {error, Reason :: term()}).
-start_link(Url, Period, Validations) ->
-    gen_fsm:start_link(?MODULE, [Url, Period, Validations], []).
+-spec(start_link(Ping::#{}, Config::#{}) -> {ok, pid()} | ignore | {error, Reason :: term()}).
+start_link(Ping, Config) ->
+    #{"url" := Url, "period" := Period} = Ping,
+    Validations = [{status, 200}],  % TODO
+    gen_fsm:start_link(?MODULE, [erlping_template:do(Url, Config), Period * 1000, Validations], []).
 
 %%%===================================================================
 %%% gen_fsm callbacks
@@ -241,10 +243,10 @@ start_workers(http, [IpAddress | Rest], #state{url = Url} = State, Accum) ->
 start_workers(_Scheme, [], _State, Accum) ->
     Accum.
 
-handle_response(Response={{"HTTP/1.1", Status, _StatusText}, _Headers, _Body}, IpAddress,
+handle_response(Response={{"HTTP/1.1", _Status, _StatusText}, _Headers, _Body}, IpAddress,
     #state{validations=Validations}) ->
     apply_validations(Response, IpAddress, Validations);
-handle_response(Response, IpAddress, _State) ->
+handle_response(Response, _IpAddress, _State) ->
     lager:warning("Unexpected response: ~p", [Response]),
     false.
 
@@ -265,7 +267,7 @@ apply_validations(_Response, _IpAddress, []) ->
     ok.
 
 
-gen_uri(Scheme, UserInfo, IpAddress, Port, Path, Query) ->
+gen_uri(Scheme, _UserInfo, IpAddress, Port, Path, Query) ->
     lists:flatten(io_lib:format("~w://~s:~p/~s~s", [Scheme, inet_parse:ntoa(IpAddress), Port, maybe_path(Path), Query])).
 
 maybe_path("/") ->

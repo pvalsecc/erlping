@@ -173,7 +173,7 @@ handle_sync_event(_Event, _From, StateName, State) ->
     {next_state, NextStateName :: atom(), NewStateData :: term(),
         timeout() | hibernate} |
     {stop, Reason :: normal | term(), NewStateData :: term()}).
-handle_info({ssl, SslSocket, Data}, wait_response, #state{response = PrevResponse}=State) ->
+handle_info({ssl, _SslSocket, Data}, wait_response, #state{response = PrevResponse}=State) ->
     {next_state, wait_response, State#state{response = lists:append(PrevResponse, Data)}};
 handle_info({ssl_closed, _SslSocket}, wait_response, #state{response = Response, ping = Ping}=State) ->
     lager:debug("Got the whole response"),
