@@ -12,7 +12,7 @@
 -behaviour(gen_fsm).
 
 %% API
--export([start_link/2]).
+-export([start_link/3]).
 
 %% gen_fsm callbacks
 -export([init/1,
@@ -29,6 +29,9 @@
 -type validations() :: [validation()].
 
 -record(state, {
+    rid :: odi:rid(),
+    ping :: #{},
+    config :: #{},
     url :: list(),
     period :: number(),
     validations :: validations(),
@@ -48,10 +51,9 @@
 %%
 %% @end
 %%--------------------------------------------------------------------
--spec(start_link(Ping::#{}, Config::#{}) -> {ok, pid()} | ignore | {error, Reason :: term()}).
-start_link(Ping, Config) ->
-    #{"url" := Url, "period" := Period, "validates" := Validations} = Ping,
-    gen_fsm:start_link(?MODULE, [erlping_template:do(Url, Config), Period * 1000, Validations], []).
+-spec(start_link(Rid::odi:rid(), Ping::#{}, Config::#{}) -> {ok, pid()} | ignore | {error, Reason :: term()}).
+start_link(Rid, Ping, Config) ->
+    gen_fsm:start_link(?MODULE, [Rid, Ping, Config], []).
 
 %%%===================================================================
 %%% gen_fsm callbacks
@@ -70,9 +72,12 @@ start_link(Ping, Config) ->
     {ok, StateName :: atom(), StateData :: #state{}} |
     {ok, StateName :: atom(), StateData :: #state{}, timeout() | hibernate} |
     {stop, Reason :: term()} | ignore).
-init([Url, Period, Validations]) ->
+init([Rid, Ping, Config]) ->
+    #{"url" := Url, "period" := Period, "validates" := Validations} = Ping,
     lager:md([{desc, Url}]),
-    {ok, ping, #state{url=Url, period=Period, validations=Validations}, 0}.
+    {ok, ping, #state{rid=Rid, ping=Ping, config=Config,
+        url=erlping_template:do(Url, Config),
+        period=Period * 1000, validations=Validations}, 0}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -243,29 +248,32 @@ start_workers(_Scheme, [], _State, Accum) ->
     Accum.
 
 handle_response(Response={{"HTTP/1.1", _Status, _StatusText}, _Headers, _Body}, IpAddress,
-    #state{validations=Validations}) ->
-    apply_validations(Response, IpAddress, Validations);
+    #state{validations=Validations}=State) ->
+    notify({IpAddress, Response}, apply_validations(Response, IpAddress, Validations), State);
 handle_response(Response, _IpAddress, _State) ->
     lager:warning("Unexpected response: ~p", [Response]),
     false.
 
 
 apply_validation({{"HTTP/1.1", Status, _Text}, _Headers, _Body}, IpAddress,
-                 {"HttpStatusValidation", #{"expected_status" := Status}}) ->
+                 {"HttpStatusValidation", #{"expected_status" := ExpectedStatus}}) ->
     lager:debug("Good status for ~s", [IpAddress]),
     true;
 apply_validation(Response, IpAddress, Validation) ->
     lager:warning("Validation ~p failed for ~s: ~p", [Validation, IpAddress, Response]),
-    false.
+    Validation.
 
 apply_validations(Response, IpAddress, [Validation | Rest]) ->
     case apply_validation(Response, IpAddress, Validation) of
         true -> apply_validations(Response, IpAddress, Rest);
-        false -> false
+        Failure -> Failure
     end;
 apply_validations(_Response, _IpAddress, []) ->
     ok.
 
+
+notify(Response, Result, #state{rid=Rid, ping=Ping, config=Config}) ->
+    erlping_reporter:send_report(Rid, Ping, Config, Response, Result).
 
 gen_uri(Scheme, _UserInfo, IpAddress, Port, Path, Query) ->
     lists:flatten(io_lib:format("~w://~s:~p/~s~s", [Scheme, inet_parse:ntoa(IpAddress), Port, maybe_path(Path), Query])).

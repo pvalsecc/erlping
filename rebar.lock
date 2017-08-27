@@ -15,7 +15,11 @@
  {<<"small_ints">>,
   {git,"https://github.com/whatyouhide/small_ints.git",
        {ref,"c80501a65ed98ed7b9f03cd03c93641c2c5d6ef9"}},
-  1}]}.
+  1},
+ {<<"worker_pool">>,
+  {git,"https://github.com/inaka/worker_pool.git",
+       {ref,"a19486c5f4bb3a319029027a82ceadb52ac2c2ea"}},
+  0}]}.
 [
 {pkg_hash,[
  {<<"goldrush">>, <<"F06E5D5F1277DA5C413E84D5A2924174182FB108DABB39D5EC548B27424CD106">>}]}

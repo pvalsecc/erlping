@@ -39,7 +39,7 @@ create_childs([{Rid, Class, Ping, Config} | Rest], Acc) ->
     create_childs(Rest, [
         #{
             id => {Rid, Config},
-            start => {Module, start_link, [Ping, Config]},
+            start => {Module, start_link, [Rid, Ping, Config]},
             restart => permanent,
             shutdown => 1000,
             type => worker

@@ -9,7 +9,8 @@
     inets,
     ssl,
     lager,
-    odi
+    odi,
+    worker_pool
    ]},
   {env,[]},
   {modules, []},
