@@ -210,8 +210,9 @@ group_merge(T, Parent, Child) ->
             Acc;
         ("in_" ++ _, _V, Acc) ->
             Acc;
-        ("name", _V, Acc) ->
-            Acc;
+        ("name", V, Acc) ->
+            ParentPath = maps:get("path", Acc, []),
+            Acc#{"path" => [V | ParentPath]};
         (K, V, Acc) ->
             Acc#{K => V}
         end, Parent, Child).

@@ -249,14 +249,14 @@ start_workers(_Scheme, [], _State, Accum) ->
 
 handle_response(Response={{"HTTP/1.1", _Status, _StatusText}, _Headers, _Body}, IpAddress,
     #state{validations=Validations}=State) ->
-    notify({IpAddress, Response}, apply_validations(Response, IpAddress, Validations), State);
+    notify({http, IpAddress, Response}, apply_validations(Response, IpAddress, Validations), State);
 handle_response(Response, _IpAddress, _State) ->
     lager:warning("Unexpected response: ~p", [Response]),
     false.
 
 
 apply_validation({{"HTTP/1.1", Status, _Text}, _Headers, _Body}, IpAddress,
-                 {"HttpStatusValidation", #{"expected_status" := ExpectedStatus}}) ->
+                 {"HttpStatusValidation", #{"expected_status" := Status}}) ->
     lager:debug("Good status for ~s", [IpAddress]),
     true;
 apply_validation(Response, IpAddress, Validation) ->

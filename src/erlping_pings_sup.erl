@@ -38,7 +38,7 @@ create_childs([{Rid, Class, Ping, Config} | Rest], Acc) ->
     Module = ping_module(Class),
     create_childs(Rest, [
         #{
-            id => {Rid, Config},
+            id => erlping_reporter:get_ping_path(Ping, Config),
             start => {Module, start_link, [Rid, Ping, Config]},
             restart => permanent,
             shutdown => 1000,
