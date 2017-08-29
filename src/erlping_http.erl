@@ -74,10 +74,12 @@ start_link(Rid, Ping, Config) ->
     {stop, Reason :: term()} | ignore).
 init([Rid, Ping, Config]) ->
     #{"url" := Url, "period" := Period, "validates" := Validations} = Ping,
-    lager:md([{desc, Url}]),
+    RealUrl = erlping_template:do(Url, Config),
+    lager:md([{desc, RealUrl}]),
+    RandomStart = rand:uniform(Period * 1000),  % to not have everything start at the same time
     {ok, ping, #state{rid=Rid, ping=Ping, config=Config,
-        url=erlping_template:do(Url, Config),
-        period=Period * 1000, validations=Validations}, 0}.
+        url= RealUrl,
+        period=Period * 1000, validations=Validations}, RandomStart}.
 
 %%--------------------------------------------------------------------
 %% @private
