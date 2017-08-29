@@ -258,9 +258,19 @@ handle_response(Response, _IpAddress, _State) ->
 
 
 apply_validation({{"HTTP/1.1", Status, _Text}, _Headers, _Body}, IpAddress,
-                 {"HttpStatusValidation", #{"expected_status" := Status}}) ->
+    {"HttpStatusValidation", #{"expected_status" := Status}}) ->
     lager:debug("Good status for ~s", [IpAddress]),
     true;
+apply_validation({{"HTTP/1.1", _Status, _Text}, _Headers, Body}, IpAddress,
+    {"RegexpValidation", #{"regexp" := Regexp}} = Validation) ->
+    case re:run(Body, Regexp) of
+        {match, _} ->
+            lager:debug("Good content for ~s", [IpAddress]),
+            true;
+        nomatch ->
+            lager:warning("Bad content for ~s", [IpAddress]),
+            Validation
+    end;
 apply_validation(Response, IpAddress, Validation) ->
     lager:warning("Validation ~p failed for ~s: ~p", [Validation, IpAddress, Response]),
     Validation.

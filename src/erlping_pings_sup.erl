@@ -35,16 +35,21 @@ init([]) ->
 create_childs([], Acc) ->
     lists:reverse(Acc);
 create_childs([{Rid, Class, Ping, Config} | Rest], Acc) ->
-    Module = ping_module(Class),
-    create_childs(Rest, [
-        #{
-            id => erlping_reporter:get_ping_path(Ping, Config),
-            start => {Module, start_link, [Rid, Ping, Config]},
-            restart => permanent,
-            shutdown => 1000,
-            type => worker
-        } | Acc
-    ]).
+    case Config of
+        #{"disabled" := True} ->
+            create_childs(Rest, Acc);
+        _ ->
+            Module = ping_module(Class),
+            create_childs(Rest, [
+                #{
+                    id => erlping_reporter:get_ping_path(Ping, Config),
+                    start => {Module, start_link, [Rid, Ping, Config]},
+                    restart => permanent,
+                    shutdown => 1000,
+                    type => worker
+                } | Acc
+            ])
+    end.
 
 %%====================================================================
 %% Internal functions

@@ -9,7 +9,9 @@ send_report(PingRid, Ping, Config, Response, Result) ->
         #{"notifies" := Notifies} ->
             lists:foreach(fun(Notif) ->
                 wpool:cast(erlping_reporters, {?MODULE, send_report_impl, [Notif, PingRid, Ping, Config, Response, Result]})
-            end, Notifies)
+            end, Notifies);
+        _ ->
+            ok
     end.
 
 
@@ -27,10 +29,13 @@ send_report_impl({"EmailReporter", #{"email" := ToAddress}=EmailConfig}, _PingRi
             Body = io_lib:format(
                 "Failed check ~s\r\nResponse:\r\n~s",
                 [format_result(Result), format_response(Response)]),
-            SendResult = gen_smtp_client:send_blocking(
-                {From, [ToAddress], Header ++ Body},
-                SmtpConfig),
-            lager:info("email result=~p", [SendResult])
+            case gen_smtp_client:send_blocking({From, [ToAddress], Header ++ Body}, SmtpConfig) of
+                {error, Type, Message} ->
+                    lager:warning("Failed sending email: ~p ~p", [Type, Message]);
+                {error, Reason} ->
+                    lager:warning("Failed sending email: ~p", [Reason]);
+                SendResult -> lager:info("email success: ~p", [SendResult])
+            end
     end,
     ok.
 
