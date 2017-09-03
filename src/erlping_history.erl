@@ -4,15 +4,15 @@
 %%% @doc
 %%%
 %%% @end
-%%% Created : 26. Aug 2017 16:57
+%%% Created : 03. Sep 2017 13:06
 %%%-------------------------------------------------------------------
--module(erlping_db).
+-module(erlping_history).
 -author("patrick").
 
 -behaviour(gen_server).
 
 %% API
--export([start_link/0, load_config/1]).
+-export([start_link/0, get_same_status_count/3]).
 
 %% gen_server callbacks
 -export([init/1,
@@ -25,7 +25,7 @@
 -define(SERVER, ?MODULE).
 
 -record(state, {
-    con::pid()
+    history = #{} :: #{{} => {ok|failure, non_neg_integer()}}
 }).
 
 %%%===================================================================
@@ -43,9 +43,11 @@
 start_link() ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 
-load_config(Pid) ->
-    gen_server:call(Pid, {load_config}).
 
+-spec get_same_status_count(PingRid :: odi:rid(), list(), ok|failure) ->
+    {VeryFirst :: boolean(), Count :: non_neg_integer()}.
+get_same_status_count(PingRid, Path, Status) ->
+    gen_server:call(?SERVER, {get_same_status_count, PingRid, Path, Status}).
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -66,11 +68,7 @@ load_config(Pid) ->
     {ok, State :: #state{}} | {ok, State :: #state{}, timeout() | hibernate} |
     {stop, Reason :: term()} | ignore).
 init([]) ->
-    {ok, #{host := Host, db_name := DBName, user := User, password := Password}} =
-        application:get_env(erlping, db),
-    {_Clusters, Con} = odi:db_open(Host, DBName, User, Password, []),
-    State = #state{con = Con},
-    {ok, State}.
+    {ok, #state{}}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -87,9 +85,20 @@ init([]) ->
     {noreply, NewState :: #state{}, timeout() | hibernate} |
     {stop, Reason :: term(), Reply :: term(), NewState :: #state{}} |
     {stop, Reason :: term(), NewState :: #state{}}).
-handle_call({load_config}, _From, State) ->
-    {reply, load_config_impl(State), State};
-handle_call(_Request, _From, State) ->
+handle_call({get_same_status_count, PingRid, Path, Status}, _From, #state{history=History}=State) ->
+    Key = {PingRid, Path},
+    {VeryFirst, NewCount} =case History of
+        #{Key := Entry} ->
+            {false, case Entry of
+                {Status, PrevCount} -> PrevCount + 1;
+                _ -> 1
+            end};
+        _ -> {true, 1}
+    end,
+    NewHistory = History#{Key => {Status, NewCount}},
+    {reply, {VeryFirst, NewCount}, State#state{history = NewHistory}};
+handle_call(Request, _From, State) ->
+    lager:error("Unknown call ~p", [Request]),
     {reply, ok, State}.
 
 %%--------------------------------------------------------------------
@@ -103,7 +112,8 @@ handle_call(_Request, _From, State) ->
     {noreply, NewState :: #state{}} |
     {noreply, NewState :: #state{}, timeout() | hibernate} |
     {stop, Reason :: term(), NewState :: #state{}}).
-handle_cast(_Request, State) ->
+handle_cast(Request, State) ->
+    lager:error("Unknown cast ~p", [Request]),
     {noreply, State}.
 
 %%--------------------------------------------------------------------
@@ -120,7 +130,8 @@ handle_cast(_Request, State) ->
     {noreply, NewState :: #state{}} |
     {noreply, NewState :: #state{}, timeout() | hibernate} |
     {stop, Reason :: term(), NewState :: #state{}}).
-handle_info(_Info, State) ->
+handle_info(Info, State) ->
+    lager:error("Unknown info ~p", [Info]),
     {noreply, State}.
 
 %%--------------------------------------------------------------------
@@ -156,69 +167,3 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
-
-
-load_config_impl(#state{con=Con}) ->
-    {ok, T} = odi_graph:begin_transaction(Con),
-    Pings = odi_graph:query(T, "SELECT FROM Ping", -1,
-        "[*]out_Results:-2 in_Tests:0 in_Contains:0 out_Notifies:0 [*]out:0"),
-    pings_configs(T, Pings, []).
-
-pings_configs(_T, [], List) ->
-    List;
-pings_configs(T, [{Rid, document, _Version, Class, Ping} | Others], List) ->
-    Configs = ping_configs(T, Rid, Class, Ping),
-    pings_configs(T, Others, Configs ++ List).
-
-ping_configs(T, Rid, Class, #{"in_Tests" := GroupEdges} = Ping) ->
-    lists:map(fun(Config) -> {Class, group_merge(T, #{"rid" => Rid}, Ping), Config} end,
-        groups_configs(T, follow_edges(T, GroupEdges, "out"), [])).
-
-groups_configs(_T, [], Configs) ->
-    Configs;
-groups_configs(T, [Rid | OtherGroups], Configs) ->
-    groups_configs(T, OtherGroups, Configs ++ group_config(T, Rid)).
-
-
-group_config(T, Rid) ->
-    {_GroupRid, document, _GroupVersion, _GroupClass, Group} = odi_graph:record_load(T, Rid, default),
-    case Group of
-        #{"in_Contains" := []} ->
-            [group_merge(T, #{}, Group)];
-        #{"in_Contains" := Parents} ->
-            ParentConfigs = groups_configs(T, follow_edges(T, Parents, "out"), []),
-            lists:map(fun(ParentConfig) -> group_merge(T, ParentConfig, Group) end, ParentConfigs);
-        _ ->
-            [group_merge(T, #{}, Group)]
-    end.
-
-follow_edges(T, Edges, Direction) ->
-    lists:map(fun(EdgeRid) ->
-        {_EdgeRid, document, _EdgeVersion, _EdgeClass, Edge} = odi_graph:record_load(T, EdgeRid, default),
-        #{Direction := GroupRid} = Edge,
-        GroupRid
-    end, Edges).
-
-group_merge(T, Parent, Child) ->
-    maps:fold(
-        fun("out_Notifies", V, Acc) ->
-            ParentNotifs = maps:get("notifies", Acc, []),
-            Acc#{"notifies" => ParentNotifs ++ get_linkeds(T, follow_edges(T, V, "in"), [])};
-        ("out_Validates", V, Acc) ->
-            Acc#{"validates" => get_linkeds(T, follow_edges(T, V, "in"), [])};
-        ("out_" ++ _, _V, Acc) ->
-            Acc;
-        ("in_" ++ _, _V, Acc) ->
-            Acc;
-        ("name", V, Acc) ->
-            ParentPath = maps:get("path", Acc, []),
-            Acc#{"path" => [V | ParentPath]};
-        (K, V, Acc) ->
-            Acc#{K => V}
-        end, Parent, Child).
-
-get_linkeds(_T, [], Acc) ->
-    lists:reverse(Acc);
-get_linkeds(T, [Rid | Others], Acc) ->
-    {LinkedRid, document, _LinkedVersion, LinkedClass, Linked} = odi_graph:record_load(T, Rid, default),
-    get_linkeds(T, Others, [{LinkedClass, group_merge(T, #{"rid" => LinkedRid}, Linked)} | Acc]).

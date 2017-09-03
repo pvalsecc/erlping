@@ -37,6 +37,13 @@ init([]) ->
             type => worker
         },
         #{
+            id => history,
+            start => {erlping_history, start_link, []},
+            restart => permanent,
+            shutdown => 5000,
+            type => worker
+        },
+        #{
             id => wpool_sup,
             start => {wpool, start_pool, [erlping_reporters, [
                 {workers, 10}

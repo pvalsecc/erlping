@@ -12,7 +12,7 @@
 -behaviour(gen_fsm).
 
 %% API
--export([start_link/3]).
+-export([start_link/2]).
 
 %% gen_fsm callbacks
 -export([init/1,
@@ -29,7 +29,6 @@
 -type validations() :: [validation()].
 
 -record(state, {
-    rid :: odi:rid(),
     ping :: #{},
     config :: #{},
     url :: list(),
@@ -51,9 +50,9 @@
 %%
 %% @end
 %%--------------------------------------------------------------------
--spec(start_link(Rid::odi:rid(), Ping::#{}, Config::#{}) -> {ok, pid()} | ignore | {error, Reason :: term()}).
-start_link(Rid, Ping, Config) ->
-    gen_fsm:start_link(?MODULE, [Rid, Ping, Config], []).
+-spec(start_link(Ping::#{}, Config::#{}) -> {ok, pid()} | ignore | {error, Reason :: term()}).
+start_link(Ping, Config) ->
+    gen_fsm:start_link(?MODULE, [Ping, Config], []).
 
 %%%===================================================================
 %%% gen_fsm callbacks
@@ -72,12 +71,12 @@ start_link(Rid, Ping, Config) ->
     {ok, StateName :: atom(), StateData :: #state{}} |
     {ok, StateName :: atom(), StateData :: #state{}, timeout() | hibernate} |
     {stop, Reason :: term()} | ignore).
-init([Rid, Ping, Config]) ->
+init([Ping, Config]) ->
     #{"url" := Url, "period" := Period, "validates" := Validations} = Ping,
     RealUrl = erlping_template:do(Url, Config),
     lager:md([{desc, RealUrl}]),
     RandomStart = rand:uniform(Period * 1000),  % to not have everything start at the same time
-    {ok, ping, #state{rid=Rid, ping=Ping, config=Config,
+    {ok, ping, #state{ping=Ping, config=Config,
         url= RealUrl,
         period=Period * 1000, validations=Validations}, RandomStart}.
 
@@ -249,7 +248,7 @@ start_workers(http, [IpAddress | Rest], #state{url = Url} = State, Accum) ->
 start_workers(_Scheme, [], _State, Accum) ->
     Accum.
 
-handle_response(Response={{"HTTP/1.1", _Status, _StatusText}, _Headers, _Body}, IpAddress,
+handle_response(Response={{_Proto, _Status, _StatusText}, _Headers, _Body}, IpAddress,
     #state{validations=Validations}=State) ->
     notify({http, IpAddress, Response}, apply_validations(Response, IpAddress, Validations), State);
 handle_response(Response, _IpAddress, _State) ->
@@ -284,8 +283,8 @@ apply_validations(_Response, _IpAddress, []) ->
     ok.
 
 
-notify(Response, Result, #state{rid=Rid, ping=Ping, config=Config}) ->
-    erlping_reporter:send_report(Rid, Ping, Config, Response, Result).
+notify(Response, Result, #state{ping=Ping, config=Config}) ->
+    erlping_reporter:report(Ping, Config, Response, Result).
 
 gen_uri(Scheme, _UserInfo, IpAddress, Port, Path, Query) ->
     lists:flatten(io_lib:format("~w://~s:~p/~s~s", [Scheme, inet_parse:ntoa(IpAddress), Port, maybe_path(Path), Query])).
