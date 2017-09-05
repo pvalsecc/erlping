@@ -19,10 +19,8 @@ report_impl({_NotifClass, #{"what" := NotifWhat}}=Notif, #{"rid":=PingRid}=Ping,
     {VeryFirst, SameStatusCount} = erlping_history:get_same_status_count(PingRid, Path, SimpleResult),
     case need_notify(VeryFirst, SameStatusCount, NotifWhat, SimpleResult) of
         true ->
-            lager:info("Notif needed"),
             send_report(Notif, Ping, Config, Response, Result);
         false ->
-            lager:debug("No notif needed"),
             ok
     end.
 
@@ -55,7 +53,9 @@ send_report({"EmailReporter", #{"email" := ToAddress}=EmailConfig}, Ping, Config
         SendResult ->
             lager:info("email success: ~p", [SendResult])
     end,
-    ok.
+    ok;
+send_report({"DbReporter", #{}}, #{"rid":=PingRid}=_Ping, #{"path":=Path}=_Config, Response, Result) ->
+    erlping_db:save_result(PingRid, Path, Response, Result).
 
 
 get_ping_path(Ping, Config) ->
@@ -94,7 +94,13 @@ need_notify(_VeryFirst, _SameStatusCount, [], _Result) ->
     false;
 need_notify(_VeryFirst, 1, ["new_failure" | _Rest], failure) ->
     true;
+need_notify(_VeryFirst, _SameStatusCount, ["failure" | _Rest], failure) ->
+    true;
 need_notify(false, 1, ["new_success" | _Rest], ok) ->
+    true;
+need_notify(_VeryFirst, _SameStatusCount, ["success" | _Rest], ok) ->
+    true;
+need_notify(true, 1, ["first" | _Rest], _Result) ->
     true;
 need_notify(VeryFirst, SameStatusCount, [_Cur | Rest], Result) ->
     need_notify(VeryFirst, SameStatusCount, Rest, Result).
