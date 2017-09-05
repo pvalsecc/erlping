@@ -1,13 +1,4 @@
-%%%-------------------------------------------------------------------
-%%% @author patrick
-%%% @copyright (C) 2017, <COMPANY>
-%%% @doc
-%%%
-%%% @end
-%%% Created : 03. Sep 2017 13:06
-%%%-------------------------------------------------------------------
 -module(erlping_history).
--author("patrick").
 
 -behaviour(gen_server).
 
