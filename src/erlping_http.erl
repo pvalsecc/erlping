@@ -87,13 +87,19 @@ init([Ping, Config]) ->
     {next_state, NextStateName :: atom(), NextState :: #state{},
         timeout() | hibernate} |
     {stop, Reason :: term(), NewState :: #state{}}).
-ping(_Event, #state{url=Url}=State) ->
+ping(_Event, #state{url=Url, period=Period}=State) ->
     lager:info("Sending request"),
     {ok, {Scheme, _UserInfo, Host, _Port, _Path, _Query}} = http_uri:parse(Url),
 %%    IpAddresses = lists:append(inet_res:lookup(Host, in, aaaa), inet_res:lookup(Host, in, a)),
-    IpAddresses = inet_res:lookup(Host, in, a),
-    Workers = start_workers(Scheme, IpAddresses, State, []),
-    {next_state, wait_responses, State#state{start_time=erlang:timestamp(), workers=Workers}}.
+    case inet_res:lookup(Host, in, a) of
+        [] ->
+            lager:warning("DNS error"),
+            notify({http, null, null}, {"DNS", #{}}, State),
+        {next_state, ping, State, Period};
+        IpAddresses ->
+            Workers = start_workers(Scheme, IpAddresses, State, []),
+            {next_state, wait_responses, State#state{start_time=erlang:timestamp(), workers=Workers}}
+    end.
 
 
 %%--------------------------------------------------------------------
@@ -226,15 +232,16 @@ code_change(_OldVsn, StateName, State, _Extra) ->
 %%% Internal functions
 %%%===================================================================
 
-start_workers(https, [IpAddress | Rest], #state{url = Url} = State, Accum) ->
-    {ok, Worker} = erlping_https:start_link(Url, IpAddress),
+start_workers(https, [IpAddress | Rest], #state{url = Url, ping = #{"verb" := Verb}} = State, Accum) ->
+    {ok, Worker} = erlping_https:start_link(Verb, Url, IpAddress),
     start_workers(https, Rest, State, [{IpAddress, Worker} | Accum]);
-start_workers(http, [IpAddress | Rest], #state{url = Url} = State, Accum) ->
+start_workers(http, [IpAddress | Rest], #state{url = Url, ping = #{"verb" := Verb}} = State, Accum) ->
     {ok, {Scheme, UserInfo, Host, Port, Path, Query}} = http_uri:parse(Url),
     FixedUrl = gen_uri(Scheme, UserInfo, IpAddress, Port, Path, Query),
     {ok, _} = http_uri:parse(FixedUrl),
     lager:debug("Sending request to ~p", [FixedUrl]),
-    {ok, Worker} = httpc:request(get, {FixedUrl, [{"connection", "close"}, {"host", Host}]}, [], [{sync, false}]),
+    VerbAtom = list_to_atom(string:lowercase(Verb)),
+    {ok, Worker} = httpc:request(VerbAtom, {FixedUrl, [{"connection", "close"}, {"host", Host}]}, [], [{sync, false}]),
     start_workers(http, Rest, State, [{IpAddress, Worker} | Accum]);
 start_workers(_Scheme, [], _State, Accum) ->
     Accum.
@@ -247,11 +254,11 @@ handle_response(Response, _IpAddress, _State) ->
     false.
 
 
-apply_validation({{"HTTP/1.1", Status, _Text}, _Headers, _Body}, IpAddress,
+apply_validation({{_Proto, Status, _Text}, _Headers, _Body}, IpAddress,
     {"HttpStatusValidation", #{"expected_status" := Status}}) ->
     lager:debug("Good status for ~s", [IpAddress]),
     true;
-apply_validation({{"HTTP/1.1", _Status, _Text}, _Headers, Body}, IpAddress,
+apply_validation({{_Proto, _Status, _Text}, _Headers, Body}, IpAddress,
     {"RegexpValidation", #{"regexp" := Regexp}} = Validation) ->
     case re:run(Body, Regexp) of
         {match, _} ->

@@ -3,7 +3,7 @@
 -behaviour(gen_fsm).
 
 %% API
--export([start_link/2]).
+-export([start_link/3]).
 
 %% gen_fsm callbacks
 -export([init/1,
@@ -19,6 +19,7 @@
 
 -record(state, {
     ping :: pid(),
+    verb :: list(),
     url :: list(),
     ip_address :: list(),
     response = [] :: list()
@@ -36,9 +37,9 @@
 %%
 %% @end
 %%--------------------------------------------------------------------
--spec(start_link(Url :: list(), IpAddress :: list()) -> {ok, pid()} | ignore | {error, Reason :: term()}).
-start_link(Url, IpAddress) ->
-    gen_fsm:start_link(?MODULE, [Url, IpAddress, self()], []).
+-spec(start_link(Verb :: list(), Url :: list(), IpAddress :: list()) -> {ok, pid()} | ignore | {error, Reason :: term()}).
+start_link(Verb, Url, IpAddress) ->
+    gen_fsm:start_link(?MODULE, [Verb, Url, IpAddress, self()], []).
 
 %%%===================================================================
 %%% gen_fsm callbacks
@@ -57,9 +58,9 @@ start_link(Url, IpAddress) ->
     {ok, StateName :: atom(), StateData :: #state{}} |
     {ok, StateName :: atom(), StateData :: #state{}, timeout() | hibernate} |
     {stop, Reason :: term()} | ignore).
-init([Url, IpAddress, Ping]) ->
+init([Verb, Url, IpAddress, Ping]) ->
     lager:md([{desc, io_lib:format("~s ~s", [Url, inet_parse:ntoa(IpAddress)])}]),
-    {ok, connect, #state{url=Url, ip_address=IpAddress, ping=Ping}, 0}.
+    {ok, connect, #state{verb=Verb, url=Url, ip_address=IpAddress, ping=Ping}, 0}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -77,9 +78,9 @@ init([Url, IpAddress, Ping]) ->
     {next_state, NextStateName :: atom(), NextState :: #state{},
         timeout() | hibernate} |
     {stop, Reason :: term(), NewState :: #state{}}).
-connect(_Event, #state{url=Url, ip_address=IpAddress}=State) ->
+connect(_Event, #state{verb=Verb, url=Url, ip_address=IpAddress}=State) ->
     lager:debug("Sending request"),
-    connect_https(Url, IpAddress),
+    connect_https(Verb, Url, IpAddress),
     {next_state, wait_response, State}.
 
 %%--------------------------------------------------------------------
@@ -209,12 +210,12 @@ code_change(_OldVsn, StateName, State, _Extra) ->
 %%% Internal functions
 %%%===================================================================
 
-connect_https(Url, IpAddress) ->
+connect_https(Verb, Url, IpAddress) ->
     lager:debug("Connecting"),
     {ok, {_Scheme, _UserInfo, Host, Port, Path, Query}} = http_uri:parse(Url),
     {ok, Socket} = ssl:connect(Host, Port,  [
         {cb_info, {erlping_tcp, tcp, tcp_closed, tcp_error}},
         {force_ip_address, IpAddress}
     ], 5000),
-    Request = list_to_binary(io_lib:format("GET ~s~s HTTP/1.1\r\nHost: ~s\r\nConnection: close\r\n\r\n", [Path, Query, Host])),
+    Request = list_to_binary(io_lib:format("~s ~s~s HTTP/1.1\r\nHost: ~s\r\nConnection: close\r\n\r\n", [Verb, Path, Query, Host])),
     ssl:send(Socket, Request).

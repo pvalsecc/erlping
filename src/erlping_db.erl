@@ -217,6 +217,8 @@ group_merge(T, Parent, Child) ->
         ("name", V, Acc) ->
             ParentPath = maps:get("path", Acc, []),
             Acc#{"path" => [V | ParentPath]};
+        ("disabled", false, Acc) ->
+            Acc;  % if the parent is disabled, don't re-enable
         (K, V, Acc) ->
             Acc#{K => V}
         end, Parent, Child).
@@ -272,6 +274,16 @@ get_or_create_result_list(T, {PingClusterId, PingPos}=PingRid, Path) ->
     end.
 
 
+%% Todo add more info about Result
+create_result({http, IpAddress, null}, Result) ->
+    {"HttpResult", #{
+        "body" => null,
+        "headers" => [],
+        "ip_address" => IpAddress,
+        "status" => null,
+        "passed" => case Result of ok -> true; _ -> false end,
+        "timestamp" => get_timestamp()
+    }};
 create_result({http, IpAddress, {{_Protocol, Status, _StatusDesc}, Headers, Body}}, Result) ->
     {"HttpResult", #{
         "body" => Body,
@@ -297,17 +309,3 @@ format_path([Cur | Rest]) ->
 
 format_header({Name, Value}) ->
     lists:flatten(io_lib:format("~s: ~s", [Name, Value])).
-
-
-test_truc() ->
-    {_Clusters, Con}=odi:db_open("localhost", "erlping", "admin", "admin", []),
-    {ok,T}=odi_graph:begin_transaction(Con),
-    {Mega, Sec, Micro} = os:timestamp(),
-    Timestamp = (Mega*1000000 + Sec)*1000 + round(Micro/1000),
-    DbEntry = {"HttpResult", #{"body" => <<"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\r\n\r\n<html>\r\n<head>\r\n<meta name=\"Author\" content=\"Yvan Valsecchi\"/>\r\n  <meta name=\"GENERATOR\" content=\"Mozilla/4.04 [en] (X11; I; Linux 2.0.32 i686) [Netscape]\"/>\r\n\t<meta name=\"ROBOTS\" content=\"INDEX,FOLLOW\"/>\r\n<title>Page principale du site THUS.ch</title>\r\n<style>\r\n\tbody { background: #e8eeff; color: black}\r\n</style>\r\n</head>\r\n<body >\r\n<div style=\"text-align: center; font-family:  Arial, helvetica, Verdana, sans-serif; font-weight : bold; font-style : italic; font-size: 35pt ; letter-spacing :0.3em ;\">Bienvenue</div>\r\n<div style=\"text-align: center; font-family: Verdana, Arial, sans-serif; font-weight : bold; font-size: 14pt ; color :#3333ff;\">Sur WWW.THUS.CH</div>\r\n<p><div style=\"text-align: center; font-family:  helvetica, sans-serif; font-size: 10pt ;\">Anciennement ce site portait le nom de <b><i>www.dante.urbanet.ch</i></b>. Il s'agit d'un site privé sans attache commerciale. Il regroupe aujourd'hui plusieurs sites de caractère et d'intérêts différents que vous pouvez visiter en cliquant sur les liens ci-dessous.</div></p>\r\n<p><div style=\"text-align: center; font-family:  arial, sans-serif; font-weight : bold; font-style : italic; font-size: 10pt ;\">Bonne visite et revenez souvent nous trouver.</div></p>\r\n<p><center><table border=\"0\">\r\n\t<tr>\r\n\t\t<td><a href=\"/~patrick/\"><img alt=\"\"  src=\"/~patrick/petit.jpg\" width=\"100\" height=\"76\"></a></td>\r\n\t\t<td>Patrick and his Linux universe </td>\r\n\t\t<td rowspan=\"2\" valign=\"middle\">&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"http://gallery.thus.ch/\"><img src=\"egypt3.jpg\" alt=\"Photo Gallery\" width=\"100\" height=\"152\"></a></td>\r\n\t\t<td rowspan=\"2\" valign=\"middle\">Photo Gallery</td>\r\n\t</tr>\r\n\t<tr>\r\n\t\t<td><a href=\"http://marketing.thus.ch/loader.php\"><img src=\"logoyv.jpg\" alt=\"Cours complet de  marketing\" width=\"100\" height=\"125\"></a></td>\r\n\t\t<td>Cours marketing</td>\r\n\t</tr>\r\n</table></center></p>\r\n</body>\r\n</html>\r\n">>,
-        "headers" => ["Referer: xxx", "Server: yyyy"], "ip_address" => "10.1.2.3", "status" => 200, "passed" => true, "timestamp" => Timestamp}},
-    ok = odi_graph:create_vertex(T, -2, {"ResultList", #{path=>["Thus"]}}),
-    ok = odi_graph:create_edge(T, -3, {35, 0}, -2, {"Results", #{}}),
-    ok = odi_graph:create_vertex(T, -4, DbEntry),
-    ok = odi_graph:create_edge(T, -5, -2, -4, {"ResultedIn", #{}}),
-    odi_graph:commit(T, 1).

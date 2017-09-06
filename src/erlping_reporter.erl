@@ -55,6 +55,7 @@ send_report({"EmailReporter", #{"email" := ToAddress}=EmailConfig}, Ping, Config
     end,
     ok;
 send_report({"DbReporter", #{}}, #{"rid":=PingRid}=_Ping, #{"path":=Path}=_Config, Response, Result) ->
+    lager:info("Adding record to DB Result=~p", [Result]),
     erlping_db:save_result(PingRid, Path, Response, Result).
 
 
@@ -64,6 +65,9 @@ get_ping_path(Ping, Config) ->
     string:join(lists:reverse([PingName | GroupPath]), "/").
 
 
+format_response({http, IpAddress, null}) ->
+    io_lib:format("  Server IP: ~s\r\n\r\n",
+        [IpAddress]);
 format_response({http, IpAddress, {{_Protocol, Status, StatusDesc}, Headers, Body}}) ->
     io_lib:format("  Server IP: ~s\r\n\r\n  HTTP status: ~p (~s)\r\n\r\n  Headers:\r\n~s\r\n  Body:\r\n~s",
         [IpAddress, Status, StatusDesc, format_headers("    ", Headers), Body]).
