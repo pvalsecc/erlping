@@ -611,6 +611,38 @@
         {
             "id": 152,
             "name": "dbreporter_7"
+        },
+        {
+            "id": 153,
+            "name": "statsdreporter"
+        },
+        {
+            "id": 154,
+            "name": "statsdreporter_1"
+        },
+        {
+            "id": 155,
+            "name": "statsdreporter_2"
+        },
+        {
+            "id": 156,
+            "name": "statsdreporter_3"
+        },
+        {
+            "id": 157,
+            "name": "statsdreporter_4"
+        },
+        {
+            "id": 158,
+            "name": "statsdreporter_5"
+        },
+        {
+            "id": 159,
+            "name": "statsdreporter_6"
+        },
+        {
+            "id": 160,
+            "name": "statsdreporter_7"
         }
     ],
     "indexes": [
@@ -1444,6 +1476,42 @@
                 ],
                 "super-classes": [
                     "E"
+                ]
+            },
+            {
+                "cluster-ids": [
+                    153,
+                    154,
+                    155,
+                    156,
+                    157,
+                    158,
+                    159,
+                    160
+                ],
+                "cluster-selection": "round-robin",
+                "default-cluster-id": 153,
+                "name": "StatsdReporter",
+                "properties": [
+                    {
+                        "collate": "default",
+                        "mandatory": true,
+                        "name": "address",
+                        "not-null": true,
+                        "type": "STRING"
+                    },
+                    {
+                        "collate": "default",
+                        "mandatory": true,
+                        "max": "65535",
+                        "min": "0",
+                        "name": "port",
+                        "not-null": true,
+                        "type": "INTEGER"
+                    }
+                ],
+                "super-classes": [
+                    "Reporter"
                 ]
             },
             {

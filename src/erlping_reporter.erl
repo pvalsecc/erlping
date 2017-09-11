@@ -24,7 +24,9 @@ report_impl({_NotifClass, #{"what" := NotifWhat}}=Notif, #{"rid":=PingRid}=Ping,
             ok
     end.
 
-send_report({"EmailReporter", #{"email" := ToAddress}=EmailConfig}, Ping, Config, Response, Result) ->
+
+send_report({"EmailReporter", #{"email" := ToAddress}=EmailConfig},
+            Ping, Config, Response, Result) ->
     lager:info("send email EmailConfig=~p Result=~p", [EmailConfig, Result]),
     {ok, SmtpConfig} = application:get_env(erlping, smtp),
     From = "patrick@thus.ch",
@@ -54,9 +56,17 @@ send_report({"EmailReporter", #{"email" := ToAddress}=EmailConfig}, Ping, Config
             lager:info("email success: ~p", [SendResult])
     end,
     ok;
-send_report({"DbReporter", #{}}, #{"rid":=PingRid}=_Ping, #{"path":=Path}=_Config, Response, Result) ->
+
+send_report({"DbReporter", #{}},
+            #{"rid":=PingRid}=_Ping, #{"path":=Path}=_Config, Response, Result) ->
     lager:info("Adding record to DB Result=~p", [Result]),
-    erlping_db:save_result(PingRid, Path, Response, Result).
+    erlping_db:save_result(PingRid, Path, Response, Result);
+
+send_report({"StatsdReporter", #{"address":=StatsdAddress, "port":=StatsdPort}},
+            #{"path":=PingName}=_Ping, #{"path":=Path}=_Config, {http, IpAddress, Response}, Result) ->
+    lager:debug("Sending StatsD packet"),
+    erlping_statsd:send_gauge(StatsdAddress, StatsdPort, lists:reverse(Path) ++ PingName ++ [IpAddress], case Result of ok -> 1; _ -> 0 end),
+    lager:debug("StatsD packet sent").
 
 
 get_ping_path(Ping, Config) ->
