@@ -1,0 +1,1567 @@
+{
+    "clusters": [
+        {
+            "id": 0,
+            "name": "internal"
+        },
+        {
+            "id": 1,
+            "name": "index"
+        },
+        {
+            "id": 2,
+            "name": "manindex"
+        },
+        {
+            "id": 3,
+            "name": "default"
+        },
+        {
+            "id": 4,
+            "name": "orole"
+        },
+        {
+            "id": 5,
+            "name": "ouser"
+        },
+        {
+            "id": 6,
+            "name": "ofunction"
+        },
+        {
+            "id": 7,
+            "name": "osequence"
+        },
+        {
+            "id": 8,
+            "name": "oschedule"
+        },
+        {
+            "id": 9,
+            "name": "v"
+        },
+        {
+            "id": 10,
+            "name": "v_1"
+        },
+        {
+            "id": 11,
+            "name": "v_2"
+        },
+        {
+            "id": 12,
+            "name": "v_3"
+        },
+        {
+            "id": 13,
+            "name": "v_4"
+        },
+        {
+            "id": 14,
+            "name": "v_5"
+        },
+        {
+            "id": 15,
+            "name": "v_6"
+        },
+        {
+            "id": 16,
+            "name": "v_7"
+        },
+        {
+            "id": 17,
+            "name": "e"
+        },
+        {
+            "id": 18,
+            "name": "e_1"
+        },
+        {
+            "id": 19,
+            "name": "e_2"
+        },
+        {
+            "id": 20,
+            "name": "e_3"
+        },
+        {
+            "id": 21,
+            "name": "e_4"
+        },
+        {
+            "id": 22,
+            "name": "e_5"
+        },
+        {
+            "id": 23,
+            "name": "e_6"
+        },
+        {
+            "id": 24,
+            "name": "e_7"
+        },
+        {
+            "id": 25,
+            "name": "_studio"
+        },
+        {
+            "id": 26,
+            "name": "_studio_1"
+        },
+        {
+            "id": 27,
+            "name": "_studio_2"
+        },
+        {
+            "id": 28,
+            "name": "_studio_3"
+        },
+        {
+            "id": 29,
+            "name": "_studio_4"
+        },
+        {
+            "id": 30,
+            "name": "_studio_5"
+        },
+        {
+            "id": 31,
+            "name": "_studio_6"
+        },
+        {
+            "id": 32,
+            "name": "_studio_7"
+        },
+        {
+            "id": 33,
+            "name": "http"
+        },
+        {
+            "id": 34,
+            "name": "http_1"
+        },
+        {
+            "id": 35,
+            "name": "http_2"
+        },
+        {
+            "id": 36,
+            "name": "http_3"
+        },
+        {
+            "id": 37,
+            "name": "http_4"
+        },
+        {
+            "id": 38,
+            "name": "http_5"
+        },
+        {
+            "id": 39,
+            "name": "http_6"
+        },
+        {
+            "id": 40,
+            "name": "http_7"
+        },
+        {
+            "id": 41,
+            "name": "group"
+        },
+        {
+            "id": 42,
+            "name": "group_1"
+        },
+        {
+            "id": 43,
+            "name": "group_2"
+        },
+        {
+            "id": 44,
+            "name": "group_3"
+        },
+        {
+            "id": 45,
+            "name": "group_4"
+        },
+        {
+            "id": 46,
+            "name": "group_5"
+        },
+        {
+            "id": 47,
+            "name": "group_6"
+        },
+        {
+            "id": 48,
+            "name": "group_7"
+        },
+        {
+            "id": 49,
+            "name": "contains"
+        },
+        {
+            "id": 50,
+            "name": "contains_1"
+        },
+        {
+            "id": 51,
+            "name": "contains_2"
+        },
+        {
+            "id": 52,
+            "name": "contains_3"
+        },
+        {
+            "id": 53,
+            "name": "contains_4"
+        },
+        {
+            "id": 54,
+            "name": "contains_5"
+        },
+        {
+            "id": 55,
+            "name": "contains_6"
+        },
+        {
+            "id": 56,
+            "name": "contains_7"
+        },
+        {
+            "id": 57,
+            "name": "tests"
+        },
+        {
+            "id": 58,
+            "name": "tests_1"
+        },
+        {
+            "id": 59,
+            "name": "tests_2"
+        },
+        {
+            "id": 60,
+            "name": "tests_3"
+        },
+        {
+            "id": 61,
+            "name": "tests_4"
+        },
+        {
+            "id": 62,
+            "name": "tests_5"
+        },
+        {
+            "id": 63,
+            "name": "tests_6"
+        },
+        {
+            "id": 64,
+            "name": "tests_7"
+        },
+        {
+            "id": 65,
+            "name": "httpresult"
+        },
+        {
+            "id": 66,
+            "name": "httpresult_1"
+        },
+        {
+            "id": 67,
+            "name": "httpresult_2"
+        },
+        {
+            "id": 68,
+            "name": "httpresult_3"
+        },
+        {
+            "id": 69,
+            "name": "httpresult_4"
+        },
+        {
+            "id": 70,
+            "name": "httpresult_5"
+        },
+        {
+            "id": 71,
+            "name": "httpresult_6"
+        },
+        {
+            "id": 72,
+            "name": "httpresult_7"
+        },
+        {
+            "id": 73,
+            "name": "resultedin"
+        },
+        {
+            "id": 74,
+            "name": "resultedin_1"
+        },
+        {
+            "id": 75,
+            "name": "resultedin_2"
+        },
+        {
+            "id": 76,
+            "name": "resultedin_3"
+        },
+        {
+            "id": 77,
+            "name": "resultedin_4"
+        },
+        {
+            "id": 78,
+            "name": "resultedin_5"
+        },
+        {
+            "id": 79,
+            "name": "resultedin_6"
+        },
+        {
+            "id": 80,
+            "name": "resultedin_7"
+        },
+        {
+            "id": 81,
+            "name": "config"
+        },
+        {
+            "id": 82,
+            "name": "config_1"
+        },
+        {
+            "id": 83,
+            "name": "config_2"
+        },
+        {
+            "id": 84,
+            "name": "config_3"
+        },
+        {
+            "id": 85,
+            "name": "config_4"
+        },
+        {
+            "id": 86,
+            "name": "config_5"
+        },
+        {
+            "id": 87,
+            "name": "config_6"
+        },
+        {
+            "id": 88,
+            "name": "config_7"
+        },
+        {
+            "id": 89,
+            "name": "emailreporter"
+        },
+        {
+            "id": 90,
+            "name": "emailreporter_1"
+        },
+        {
+            "id": 91,
+            "name": "emailreporter_2"
+        },
+        {
+            "id": 92,
+            "name": "emailreporter_3"
+        },
+        {
+            "id": 93,
+            "name": "emailreporter_4"
+        },
+        {
+            "id": 94,
+            "name": "emailreporter_5"
+        },
+        {
+            "id": 95,
+            "name": "emailreporter_6"
+        },
+        {
+            "id": 96,
+            "name": "emailreporter_7"
+        },
+        {
+            "id": 97,
+            "name": "notifies"
+        },
+        {
+            "id": 98,
+            "name": "notifies_1"
+        },
+        {
+            "id": 99,
+            "name": "notifies_2"
+        },
+        {
+            "id": 100,
+            "name": "notifies_3"
+        },
+        {
+            "id": 101,
+            "name": "notifies_4"
+        },
+        {
+            "id": 102,
+            "name": "notifies_5"
+        },
+        {
+            "id": 103,
+            "name": "notifies_6"
+        },
+        {
+            "id": 104,
+            "name": "notifies_7"
+        },
+        {
+            "id": 105,
+            "name": "resultlist"
+        },
+        {
+            "id": 106,
+            "name": "resultlist_1"
+        },
+        {
+            "id": 107,
+            "name": "resultlist_2"
+        },
+        {
+            "id": 108,
+            "name": "resultlist_3"
+        },
+        {
+            "id": 109,
+            "name": "resultlist_4"
+        },
+        {
+            "id": 110,
+            "name": "resultlist_5"
+        },
+        {
+            "id": 111,
+            "name": "resultlist_6"
+        },
+        {
+            "id": 112,
+            "name": "resultlist_7"
+        },
+        {
+            "id": 113,
+            "name": "results"
+        },
+        {
+            "id": 114,
+            "name": "results_1"
+        },
+        {
+            "id": 115,
+            "name": "results_2"
+        },
+        {
+            "id": 116,
+            "name": "results_3"
+        },
+        {
+            "id": 117,
+            "name": "results_4"
+        },
+        {
+            "id": 118,
+            "name": "results_5"
+        },
+        {
+            "id": 119,
+            "name": "results_6"
+        },
+        {
+            "id": 120,
+            "name": "results_7"
+        },
+        {
+            "id": 121,
+            "name": "httpstatusvalidation"
+        },
+        {
+            "id": 122,
+            "name": "httpstatusvalidation_1"
+        },
+        {
+            "id": 123,
+            "name": "httpstatusvalidation_2"
+        },
+        {
+            "id": 124,
+            "name": "httpstatusvalidation_3"
+        },
+        {
+            "id": 125,
+            "name": "httpstatusvalidation_4"
+        },
+        {
+            "id": 126,
+            "name": "httpstatusvalidation_5"
+        },
+        {
+            "id": 127,
+            "name": "httpstatusvalidation_6"
+        },
+        {
+            "id": 128,
+            "name": "httpstatusvalidation_7"
+        },
+        {
+            "id": 129,
+            "name": "validates"
+        },
+        {
+            "id": 130,
+            "name": "validates_1"
+        },
+        {
+            "id": 131,
+            "name": "validates_2"
+        },
+        {
+            "id": 132,
+            "name": "validates_3"
+        },
+        {
+            "id": 133,
+            "name": "validates_4"
+        },
+        {
+            "id": 134,
+            "name": "validates_5"
+        },
+        {
+            "id": 135,
+            "name": "validates_6"
+        },
+        {
+            "id": 136,
+            "name": "validates_7"
+        },
+        {
+            "id": 137,
+            "name": "regexpvalidation"
+        },
+        {
+            "id": 138,
+            "name": "regexpvalidation_1"
+        },
+        {
+            "id": 139,
+            "name": "regexpvalidation_2"
+        },
+        {
+            "id": 140,
+            "name": "regexpvalidation_3"
+        },
+        {
+            "id": 141,
+            "name": "regexpvalidation_4"
+        },
+        {
+            "id": 142,
+            "name": "regexpvalidation_5"
+        },
+        {
+            "id": 143,
+            "name": "regexpvalidation_6"
+        },
+        {
+            "id": 144,
+            "name": "regexpvalidation_7"
+        },
+        {
+            "id": 145,
+            "name": "dbreporter"
+        },
+        {
+            "id": 146,
+            "name": "dbreporter_1"
+        },
+        {
+            "id": 147,
+            "name": "dbreporter_2"
+        },
+        {
+            "id": 148,
+            "name": "dbreporter_3"
+        },
+        {
+            "id": 149,
+            "name": "dbreporter_4"
+        },
+        {
+            "id": 150,
+            "name": "dbreporter_5"
+        },
+        {
+            "id": 151,
+            "name": "dbreporter_6"
+        },
+        {
+            "id": 152,
+            "name": "dbreporter_7"
+        }
+    ],
+    "indexes": [
+        {
+            "algorithm": "SBTREE",
+            "clustersToIndex": [
+                "ouser"
+            ],
+            "definition": {
+                "defClass": "com.orientechnologies.orient.core.index.OPropertyIndexDefinition",
+                "stream": {
+                    "@type": "d",
+                    "@version": 0,
+                    "className": "OUser",
+                    "collate": "ci",
+                    "field": "name",
+                    "keyType": "STRING",
+                    "nullValuesIgnored": false
+                }
+            },
+            "name": "OUser.name",
+            "type": "UNIQUE"
+        },
+        {
+            "algorithm": "SBTREE",
+            "definition": {
+                "defClass": "com.orientechnologies.orient.core.index.OSimpleKeyIndexDefinition",
+                "stream": {
+                    "@type": "d",
+                    "@version": 0,
+                    "collate": "default",
+                    "keyTypes": [
+                        "STRING"
+                    ],
+                    "nullValuesIgnored": false
+                }
+            },
+            "metadata": {
+                "@type": "d",
+                "@version": 0,
+                "durableInNonTxMode": true,
+                "trackMode": "FULL"
+            },
+            "name": "dictionary",
+            "type": "DICTIONARY"
+        },
+        {
+            "algorithm": "SBTREE",
+            "clustersToIndex": [
+                "orole"
+            ],
+            "definition": {
+                "defClass": "com.orientechnologies.orient.core.index.OPropertyIndexDefinition",
+                "stream": {
+                    "@type": "d",
+                    "@version": 0,
+                    "className": "ORole",
+                    "collate": "ci",
+                    "field": "name",
+                    "keyType": "STRING",
+                    "nullValuesIgnored": false
+                }
+            },
+            "name": "ORole.name",
+            "type": "UNIQUE"
+        },
+        {
+            "algorithm": "HASH_INDEX",
+            "clustersToIndex": [
+                "ofunction"
+            ],
+            "definition": {
+                "defClass": "com.orientechnologies.orient.core.index.OPropertyIndexDefinition",
+                "stream": {
+                    "@type": "d",
+                    "@version": 0,
+                    "className": "OFunction",
+                    "collate": "default",
+                    "field": "name",
+                    "keyType": "STRING",
+                    "nullValuesIgnored": false
+                }
+            },
+            "name": "OFunction.name",
+            "type": "UNIQUE_HASH_INDEX"
+        }
+    ],
+    "info": {
+        "default-cluster-id": 3,
+        "engine-build": "ae9fcb9c075e1d74560a336a96b57d3661234c7b",
+        "engine-version": "2.2.26",
+        "exporter-version": 12,
+        "indexMgrRecordId": "#0:2",
+        "name": "erlping",
+        "schema-version": 4,
+        "schemaRecordId": "#0:1",
+        "storage-config-version": 17
+    },
+    "manualIndexes": [
+        {
+            "content": [],
+            "name": "dictionary"
+        }
+    ],
+    "schema": {
+        "blob-clusters": [],
+        "classes": [
+            {
+                "cluster-ids": [
+                    81,
+                    82,
+                    83,
+                    84,
+                    85,
+                    86,
+                    87,
+                    88
+                ],
+                "cluster-selection": "round-robin",
+                "default-cluster-id": 81,
+                "name": "Config",
+                "super-classes": [
+                    "V"
+                ]
+            },
+            {
+                "cluster-ids": [
+                    49,
+                    50,
+                    51,
+                    52,
+                    53,
+                    54,
+                    55,
+                    56
+                ],
+                "cluster-selection": "round-robin",
+                "default-cluster-id": 49,
+                "name": "Contains",
+                "properties": [
+                    {
+                        "collate": "default",
+                        "linked-class": "Group",
+                        "name": "in",
+                        "type": "LINK"
+                    },
+                    {
+                        "collate": "default",
+                        "linked-class": "Group",
+                        "name": "out",
+                        "type": "LINK"
+                    }
+                ],
+                "super-classes": [
+                    "E"
+                ]
+            },
+            {
+                "cluster-ids": [
+                    145,
+                    146,
+                    147,
+                    148,
+                    149,
+                    150,
+                    151,
+                    152
+                ],
+                "cluster-selection": "round-robin",
+                "default-cluster-id": 145,
+                "name": "DbReporter",
+                "properties": [],
+                "super-classes": [
+                    "Reporter"
+                ]
+            },
+            {
+                "cluster-ids": [
+                    17,
+                    18,
+                    19,
+                    20,
+                    21,
+                    22,
+                    23,
+                    24
+                ],
+                "cluster-selection": "round-robin",
+                "default-cluster-id": 17,
+                "name": "E"
+            },
+            {
+                "cluster-ids": [
+                    89,
+                    90,
+                    91,
+                    92,
+                    93,
+                    94,
+                    95,
+                    96
+                ],
+                "cluster-selection": "round-robin",
+                "default-cluster-id": 89,
+                "name": "EmailReporter",
+                "properties": [
+                    {
+                        "collate": "default",
+                        "mandatory": true,
+                        "name": "email",
+                        "type": "STRING"
+                    }
+                ],
+                "super-classes": [
+                    "Reporter"
+                ]
+            },
+            {
+                "cluster-ids": [
+                    41,
+                    42,
+                    43,
+                    44,
+                    45,
+                    46,
+                    47,
+                    48
+                ],
+                "cluster-selection": "round-robin",
+                "default-cluster-id": 41,
+                "name": "Group",
+                "properties": [
+                    {
+                        "collate": "default",
+                        "mandatory": true,
+                        "name": "name",
+                        "not-null": true,
+                        "type": "STRING"
+                    }
+                ],
+                "super-classes": [
+                    "Config"
+                ]
+            },
+            {
+                "cluster-ids": [
+                    33,
+                    34,
+                    35,
+                    36,
+                    37,
+                    38,
+                    39,
+                    40
+                ],
+                "cluster-selection": "round-robin",
+                "default-cluster-id": 33,
+                "name": "Http",
+                "properties": [
+                    {
+                        "collate": "default",
+                        "mandatory": true,
+                        "name": "url",
+                        "not-null": true,
+                        "type": "STRING"
+                    },
+                    {
+                        "collate": "default",
+                        "default-value": "GET",
+                        "mandatory": true,
+                        "name": "verb",
+                        "type": "STRING"
+                    }
+                ],
+                "super-classes": [
+                    "Ping"
+                ]
+            },
+            {
+                "cluster-ids": [
+                    65,
+                    66,
+                    67,
+                    68,
+                    69,
+                    70,
+                    71,
+                    72
+                ],
+                "cluster-selection": "round-robin",
+                "default-cluster-id": 65,
+                "name": "HttpResult",
+                "properties": [
+                    {
+                        "collate": "default",
+                        "mandatory": true,
+                        "name": "body",
+                        "type": "BINARY"
+                    },
+                    {
+                        "collate": "default",
+                        "linked-type": "STRING",
+                        "mandatory": true,
+                        "name": "headers",
+                        "not-null": true,
+                        "type": "EMBEDDEDLIST"
+                    },
+                    {
+                        "collate": "default",
+                        "mandatory": true,
+                        "name": "ip_address",
+                        "type": "STRING"
+                    },
+                    {
+                        "collate": "default",
+                        "mandatory": true,
+                        "max": "999",
+                        "min": "0",
+                        "name": "status",
+                        "type": "SHORT"
+                    }
+                ],
+                "super-classes": [
+                    "Result"
+                ]
+            },
+            {
+                "cluster-ids": [
+                    121,
+                    122,
+                    123,
+                    124,
+                    125,
+                    126,
+                    127,
+                    128
+                ],
+                "cluster-selection": "round-robin",
+                "default-cluster-id": 121,
+                "name": "HttpStatusValidation",
+                "properties": [
+                    {
+                        "collate": "default",
+                        "mandatory": true,
+                        "name": "expected_status",
+                        "not-null": true,
+                        "type": "INTEGER"
+                    }
+                ],
+                "super-classes": [
+                    "Validation"
+                ]
+            },
+            {
+                "cluster-ids": [
+                    97,
+                    98,
+                    99,
+                    100,
+                    101,
+                    102,
+                    103,
+                    104
+                ],
+                "cluster-selection": "round-robin",
+                "default-cluster-id": 97,
+                "name": "Notifies",
+                "properties": [
+                    {
+                        "collate": "default",
+                        "linked-class": "Reporter",
+                        "name": "in",
+                        "type": "LINK"
+                    },
+                    {
+                        "collate": "default",
+                        "linked-class": "Group",
+                        "name": "out",
+                        "type": "LINK"
+                    }
+                ],
+                "super-classes": [
+                    "E"
+                ]
+            },
+            {
+                "cluster-ids": [
+                    6
+                ],
+                "cluster-selection": "round-robin",
+                "default-cluster-id": 6,
+                "name": "OFunction",
+                "properties": [
+                    {
+                        "collate": "default",
+                        "name": "code",
+                        "type": "STRING"
+                    },
+                    {
+                        "collate": "default",
+                        "name": "idempotent",
+                        "type": "BOOLEAN"
+                    },
+                    {
+                        "collate": "default",
+                        "name": "language",
+                        "type": "STRING"
+                    },
+                    {
+                        "collate": "default",
+                        "mandatory": true,
+                        "name": "name",
+                        "not-null": true,
+                        "type": "STRING"
+                    },
+                    {
+                        "collate": "default",
+                        "linked-type": "STRING",
+                        "name": "parameters",
+                        "type": "EMBEDDEDLIST"
+                    }
+                ]
+            },
+            {
+                "abstract": true,
+                "cluster-ids": [
+                    -1
+                ],
+                "cluster-selection": "round-robin",
+                "default-cluster-id": -1,
+                "name": "OIdentity"
+            },
+            {
+                "abstract": true,
+                "cluster-ids": [
+                    -1
+                ],
+                "cluster-selection": "round-robin",
+                "default-cluster-id": -1,
+                "name": "ORestricted",
+                "properties": [
+                    {
+                        "collate": "default",
+                        "linked-class": "OIdentity",
+                        "name": "_allow",
+                        "type": "LINKSET"
+                    },
+                    {
+                        "collate": "default",
+                        "linked-class": "OIdentity",
+                        "name": "_allowDelete",
+                        "type": "LINKSET"
+                    },
+                    {
+                        "collate": "default",
+                        "linked-class": "OIdentity",
+                        "name": "_allowRead",
+                        "type": "LINKSET"
+                    },
+                    {
+                        "collate": "default",
+                        "linked-class": "OIdentity",
+                        "name": "_allowUpdate",
+                        "type": "LINKSET"
+                    }
+                ]
+            },
+            {
+                "cluster-ids": [
+                    4
+                ],
+                "cluster-selection": "round-robin",
+                "default-cluster-id": 4,
+                "name": "ORole",
+                "properties": [
+                    {
+                        "collate": "default",
+                        "linked-class": "ORole",
+                        "name": "inheritedRole",
+                        "type": "LINK"
+                    },
+                    {
+                        "collate": "default",
+                        "name": "mode",
+                        "type": "BYTE"
+                    },
+                    {
+                        "collate": "ci",
+                        "mandatory": true,
+                        "name": "name",
+                        "not-null": true,
+                        "type": "STRING"
+                    },
+                    {
+                        "collate": "default",
+                        "linked-type": "BYTE",
+                        "name": "rules",
+                        "type": "EMBEDDEDMAP"
+                    }
+                ],
+                "super-classes": [
+                    "OIdentity"
+                ]
+            },
+            {
+                "cluster-ids": [
+                    8
+                ],
+                "cluster-selection": "round-robin",
+                "default-cluster-id": 8,
+                "name": "OSchedule",
+                "properties": [
+                    {
+                        "collate": "default",
+                        "name": "arguments",
+                        "type": "EMBEDDEDMAP"
+                    },
+                    {
+                        "collate": "default",
+                        "linked-class": "OFunction",
+                        "mandatory": true,
+                        "name": "function",
+                        "not-null": true,
+                        "type": "LINK"
+                    },
+                    {
+                        "collate": "default",
+                        "mandatory": true,
+                        "name": "name",
+                        "not-null": true,
+                        "type": "STRING"
+                    },
+                    {
+                        "collate": "default",
+                        "mandatory": true,
+                        "name": "rule",
+                        "not-null": true,
+                        "type": "STRING"
+                    },
+                    {
+                        "collate": "default",
+                        "name": "starttime",
+                        "type": "DATETIME"
+                    },
+                    {
+                        "collate": "default",
+                        "name": "status",
+                        "type": "STRING"
+                    }
+                ]
+            },
+            {
+                "cluster-ids": [
+                    7
+                ],
+                "cluster-selection": "round-robin",
+                "default-cluster-id": 7,
+                "name": "OSequence",
+                "properties": [
+                    {
+                        "collate": "default",
+                        "name": "incr",
+                        "type": "INTEGER"
+                    },
+                    {
+                        "collate": "default",
+                        "name": "name",
+                        "type": "STRING"
+                    },
+                    {
+                        "collate": "default",
+                        "name": "start",
+                        "type": "LONG"
+                    },
+                    {
+                        "collate": "default",
+                        "name": "type",
+                        "type": "STRING"
+                    },
+                    {
+                        "collate": "default",
+                        "name": "value",
+                        "type": "LONG"
+                    }
+                ]
+            },
+            {
+                "abstract": true,
+                "cluster-ids": [
+                    -1
+                ],
+                "cluster-selection": "round-robin",
+                "default-cluster-id": -1,
+                "name": "OTriggered"
+            },
+            {
+                "cluster-ids": [
+                    5
+                ],
+                "cluster-selection": "round-robin",
+                "default-cluster-id": 5,
+                "name": "OUser",
+                "properties": [
+                    {
+                        "collate": "ci",
+                        "mandatory": true,
+                        "min": "1",
+                        "name": "name",
+                        "not-null": true,
+                        "regexp": "\\S+(.*\\S+)*",
+                        "type": "STRING"
+                    },
+                    {
+                        "collate": "default",
+                        "mandatory": true,
+                        "name": "password",
+                        "not-null": true,
+                        "type": "STRING"
+                    },
+                    {
+                        "collate": "default",
+                        "linked-class": "ORole",
+                        "name": "roles",
+                        "type": "LINKSET"
+                    },
+                    {
+                        "collate": "default",
+                        "mandatory": true,
+                        "name": "status",
+                        "not-null": true,
+                        "type": "STRING"
+                    }
+                ],
+                "super-classes": [
+                    "OIdentity"
+                ]
+            },
+            {
+                "abstract": true,
+                "cluster-ids": [
+                    -1
+                ],
+                "cluster-selection": "round-robin",
+                "default-cluster-id": -1,
+                "name": "Ping",
+                "properties": [
+                    {
+                        "collate": "default",
+                        "mandatory": true,
+                        "name": "name",
+                        "not-null": true,
+                        "type": "STRING"
+                    },
+                    {
+                        "collate": "default",
+                        "mandatory": true,
+                        "min": "1",
+                        "name": "period",
+                        "not-null": true,
+                        "type": "INTEGER"
+                    }
+                ],
+                "super-classes": [
+                    "Config"
+                ]
+            },
+            {
+                "cluster-ids": [
+                    137,
+                    138,
+                    139,
+                    140,
+                    141,
+                    142,
+                    143,
+                    144
+                ],
+                "cluster-selection": "round-robin",
+                "default-cluster-id": 137,
+                "name": "RegexpValidation",
+                "properties": [
+                    {
+                        "collate": "default",
+                        "mandatory": true,
+                        "name": "regexp",
+                        "not-null": true,
+                        "type": "STRING"
+                    }
+                ],
+                "super-classes": [
+                    "Validation"
+                ]
+            },
+            {
+                "abstract": true,
+                "cluster-ids": [
+                    -1
+                ],
+                "cluster-selection": "round-robin",
+                "default-cluster-id": -1,
+                "name": "Reporter",
+                "properties": [
+                    {
+                        "collate": "default",
+                        "linked-type": "STRING",
+                        "mandatory": true,
+                        "name": "what",
+                        "not-null": true,
+                        "type": "EMBEDDEDLIST"
+                    }
+                ],
+                "super-classes": [
+                    "Config"
+                ]
+            },
+            {
+                "abstract": true,
+                "cluster-ids": [
+                    -1
+                ],
+                "cluster-selection": "round-robin",
+                "default-cluster-id": -1,
+                "name": "Result",
+                "properties": [
+                    {
+                        "collate": "default",
+                        "mandatory": true,
+                        "name": "passed",
+                        "not-null": true,
+                        "type": "BOOLEAN"
+                    },
+                    {
+                        "collate": "default",
+                        "mandatory": true,
+                        "name": "timestamp",
+                        "not-null": true,
+                        "type": "DATETIME"
+                    }
+                ],
+                "super-classes": [
+                    "V"
+                ]
+            },
+            {
+                "cluster-ids": [
+                    105,
+                    106,
+                    107,
+                    108,
+                    109,
+                    110,
+                    111,
+                    112
+                ],
+                "cluster-selection": "round-robin",
+                "default-cluster-id": 105,
+                "name": "ResultList",
+                "properties": [
+                    {
+                        "collate": "default",
+                        "linked-type": "STRING",
+                        "mandatory": true,
+                        "name": "path",
+                        "not-null": true,
+                        "type": "EMBEDDEDLIST"
+                    }
+                ],
+                "super-classes": [
+                    "V"
+                ]
+            },
+            {
+                "cluster-ids": [
+                    73,
+                    74,
+                    75,
+                    76,
+                    77,
+                    78,
+                    79,
+                    80
+                ],
+                "cluster-selection": "round-robin",
+                "default-cluster-id": 73,
+                "name": "ResultedIn",
+                "properties": [
+                    {
+                        "collate": "default",
+                        "linked-class": "Result",
+                        "name": "in",
+                        "type": "LINK"
+                    },
+                    {
+                        "collate": "default",
+                        "linked-class": "ResultList",
+                        "name": "out",
+                        "type": "LINK"
+                    }
+                ],
+                "super-classes": [
+                    "E"
+                ]
+            },
+            {
+                "cluster-ids": [
+                    113,
+                    114,
+                    115,
+                    116,
+                    117,
+                    118,
+                    119,
+                    120
+                ],
+                "cluster-selection": "round-robin",
+                "default-cluster-id": 113,
+                "name": "Results",
+                "properties": [
+                    {
+                        "collate": "default",
+                        "linked-class": "ResultList",
+                        "name": "in",
+                        "type": "LINK"
+                    },
+                    {
+                        "collate": "default",
+                        "linked-class": "Ping",
+                        "name": "out",
+                        "type": "LINK"
+                    }
+                ],
+                "super-classes": [
+                    "E"
+                ]
+            },
+            {
+                "cluster-ids": [
+                    57,
+                    58,
+                    59,
+                    60,
+                    61,
+                    62,
+                    63,
+                    64
+                ],
+                "cluster-selection": "round-robin",
+                "default-cluster-id": 57,
+                "name": "Tests",
+                "properties": [
+                    {
+                        "collate": "default",
+                        "linked-class": "Ping",
+                        "name": "in",
+                        "type": "LINK"
+                    },
+                    {
+                        "collate": "default",
+                        "linked-class": "Group",
+                        "name": "out",
+                        "type": "LINK"
+                    }
+                ],
+                "super-classes": [
+                    "E"
+                ]
+            },
+            {
+                "cluster-ids": [
+                    9,
+                    10,
+                    11,
+                    12,
+                    13,
+                    14,
+                    15,
+                    16
+                ],
+                "cluster-selection": "round-robin",
+                "default-cluster-id": 9,
+                "name": "V"
+            },
+            {
+                "cluster-ids": [
+                    129,
+                    130,
+                    131,
+                    132,
+                    133,
+                    134,
+                    135,
+                    136
+                ],
+                "cluster-selection": "round-robin",
+                "default-cluster-id": 129,
+                "name": "Validates",
+                "properties": [
+                    {
+                        "collate": "default",
+                        "linked-class": "Validation",
+                        "name": "in",
+                        "type": "LINK"
+                    },
+                    {
+                        "collate": "default",
+                        "linked-class": "Ping",
+                        "name": "out",
+                        "type": "LINK"
+                    }
+                ],
+                "super-classes": [
+                    "E"
+                ]
+            },
+            {
+                "abstract": true,
+                "cluster-ids": [
+                    -1
+                ],
+                "cluster-selection": "round-robin",
+                "default-cluster-id": -1,
+                "name": "Validation",
+                "properties": [
+                    {
+                        "collate": "default",
+                        "mandatory": true,
+                        "name": "desc",
+                        "not-null": true,
+                        "type": "STRING"
+                    }
+                ],
+                "super-classes": [
+                    "Config"
+                ]
+            },
+            {
+                "cluster-ids": [
+                    25,
+                    26,
+                    27,
+                    28,
+                    29,
+                    30,
+                    31,
+                    32
+                ],
+                "cluster-selection": "round-robin",
+                "default-cluster-id": 25,
+                "name": "_studio"
+            }
+        ],
+        "version": 1
+    }
+}
