@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 set -e
 
 docker exec -ti orientdb bin/console.sh "connect remote:localhost/erlping root root; export schema /tmp/schema"

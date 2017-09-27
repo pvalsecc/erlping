@@ -1,30 +1,18 @@
 {"1.1.0",
-[{<<"gen_smtp">>,
-  {git,"https://github.com/Vagabond/gen_smtp.git",
-       {ref,"263b29241666f676f7979f7c6b156d8fe1e69f59"}},
-  0},
+[{<<"gen_smtp">>,{pkg,<<"gen_smtp">>,<<"0.12.0">>},0},
  {<<"goldrush">>,{pkg,<<"goldrush">>,<<"0.1.9">>},1},
- {<<"hex">>,
-  {git,"https://github.com/b/hex.git",
-       {ref,"967f059ea49e45b7d0d82e2e1177ef860f5ec4bd"}},
-  1},
- {<<"lager">>,
-  {git,"https://github.com/erlang-lager/lager.git",
-       {ref,"c3970a99131c7c73de7eba3c2a569806fe47e40a"}},
-  0},
- {<<"odi">>,
-  {git,"https://github.com/pvalsecc/odi.git",
-       {ref,"b4b8d13fb4056a905a37ab02e757b4a4998565c8"}},
-  0},
- {<<"small_ints">>,
-  {git,"https://github.com/whatyouhide/small_ints.git",
-       {ref,"c80501a65ed98ed7b9f03cd03c93641c2c5d6ef9"}},
-  1},
- {<<"worker_pool">>,
-  {git,"https://github.com/inaka/worker_pool.git",
-       {ref,"a19486c5f4bb3a319029027a82ceadb52ac2c2ea"}},
-  0}]}.
+ {<<"hex2bin">>,{pkg,<<"hex2bin">>,<<"1.0.0">>},1},
+ {<<"lager">>,{pkg,<<"lager">>,<<"3.5.1">>},0},
+ {<<"odi">>,{pkg,<<"odi">>,<<"0.1.0">>},0},
+ {<<"small_ints">>,{pkg,<<"small_ints">>,<<"0.1.0">>},1},
+ {<<"worker_pool">>,{pkg,<<"worker_pool">>,<<"3.1.0">>},0}]}.
 [
 {pkg_hash,[
- {<<"goldrush">>, <<"F06E5D5F1277DA5C413E84D5A2924174182FB108DABB39D5EC548B27424CD106">>}]}
+ {<<"gen_smtp">>, <<"97D44903F5CA18CA85CB39AEE7D9C77E98D79804BBDEF56078ADCF905CB2EF00">>},
+ {<<"goldrush">>, <<"F06E5D5F1277DA5C413E84D5A2924174182FB108DABB39D5EC548B27424CD106">>},
+ {<<"hex2bin">>, <<"AAC26EAB998AE80EACEE1C7607C629AB503EBF77A62B9242BAE2B94D47DCB71E">>},
+ {<<"lager">>, <<"63897A61AF646C59BB928FEE9756CE8BDD02D5A1A2F3551D4A5E38386C2CC071">>},
+ {<<"odi">>, <<"5F25FBDBD8BD5A76F29234910208F474CE9C835FB23E5F5317894787EBACED19">>},
+ {<<"small_ints">>, <<"82A824C8794A2DDC73CB5CD00EAD11331DB296521AD16A619C13D668572B868A">>},
+ {<<"worker_pool">>, <<"C908627E04057CF29940AD0E79B89AB161DB520EEBC76942EFD08A187BABF93A">>}]}
 ].
